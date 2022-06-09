@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html  lang="de">
+<head>
+  
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+  <link rel="shortcut icon" href="assets/images/kompl.-b-day-mode-14x-8-192x151.png" type="image/x-icon">
+  <meta name="description" content="Wie funktionieren Bitcoin wallets - digitale Geldbörsen. Was sind private-Key public-Key & Seeds. Welche Adressformate gibt es und wie funktionieren Transaktionen?">
+  
+  
+  <title>Bitcoin Wallet private keys & Seeds</title>
+  <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.css">
+  <link rel="stylesheet" href="assets/icon54-v3/style.css">
+  <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/bootstrap/css/bootstrap-grid.min.css">
+  <link rel="stylesheet" href="assets/bootstrap/css/bootstrap-reboot.min.css">
+  <link rel="stylesheet" href="assets/tether/tether.min.css">
+  <link rel="stylesheet" href="assets/dropdown/css/style.css">
+  <link rel="stylesheet" href="assets/socicon/css/styles.css">
+  <link rel="stylesheet" href="assets/theme/css/style.css">
+  <link rel="preload" as="style" href="assets/mobirise/css/mbr-additional.css"><link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
+  
+  <script src="assets/web/assets/lazyload/lazyload.js"></script>
+
+  
+  <meta name="keywords" content="Bitcoin, geldbörse, wallet, software wallet, wallet apps,  cold wallet, seed, privater schlüssel, private key, öffentlicher schlüssel, public key Adressen, Kryptowährung, Information, wissen, personalisierte Adressen, blockchain, explorer, vanity adressen">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="manifest.json">
+<script src="sw-connect.js"></script>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="assets/images/apple-launch-640x1136.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="assets/images/apple-launch-750x1334.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="assets/images/apple-launch-1242x2208.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="assets/images/apple-launch-1125x2436.png">
+<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="assets/images/apple-launch-1536x2048.png">
+<link rel="apple-touch-startup-image" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="assets/images/apple-launch-1668x2224.png">
+<link rel="apple-touch-startup-image" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="assets/images/apple-launch-2048x2732.png">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Bitcoin Uni">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+</head>
+<body>
+  
+  <section class="menu cid-s1w94PCwhr" once="menu" id="menu1-m">
+
+    
+
+    <nav class="navbar navbar-expand beta-menu navbar-dropdown align-items-center navbar-fixed-top navbar-toggleable-sm">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>
+
+        <div class="menu-logo">
+            <div class="navbar-brand">
+                <span class="navbar-logo">
+                    <a href="index.html">
+                        <img src="assets/images/kompl.-b-day-mode-14x-8-192x151.png" alt="Bitcoin uni" title="" style="height: 3.8rem;">
+                    </a>
+                </span>
+                <span class="navbar-caption-wrap">      
+                
+                    
+                    <p class="text-success display-4 fak fa-satoshisymbol-solidtilt"> <a style="color:#F1D600" href="https://bitcoin-uni.de/satoshi-price-calculator.html" class="display-4"><strong id="sato-price">
+						</strong><strong> / €</strong> </a></p>
+
+                    <script src="app.js"> </script>
+                    
+                </span>
+            </div>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav nav-dropdown" data-app-modern-menu="true"><li class="nav-item"><a class="nav-link link text-success display-4" href="index.html" aria-expanded="false">Home<font face="mobirise-icons-bold"></font></a></li><li class="nav-item"><a class="nav-link link text-success text-primary display-4" href="beratung.html" aria-expanded="false">Beratung<font face="mobirise-icons-bold"></font></a></li><li class="nav-item"><a class="nav-link link text-success display-4" href="content.html" aria-expanded="false">Blog<font face="mobirise-icons-bold"></font></a></li><li class="nav-item dropdown"><a class="nav-link link dropdown-toggle text-success display-4" href="#" aria-expanded="false" data-toggle="dropdown-submenu">Bitcoin kaufen<font face="mobirise-icons-bold"></font></a><div class="dropdown-menu"><a class="dropdown-item text-success display-4" href="five-ways-to-buy-bitcoin.html" aria-expanded="false">Einführung</a><div class="dropdown"><a class="dropdown-item dropdown-toggle text-success display-4" href="#" aria-expanded="false" data-toggle="dropdown-submenu">Bitcoin Sparplan</a><div class="dropdown-menu dropdown-submenu"><a class="dropdown-item text-success display-4" href="relai-app-bitcoin-sparplar.html" aria-expanded="false">Relai DCA</a><a class="dropdown-item text-success display-4" href="lightning-dca-debit-card.html" aria-expanded="false">Lastbit LN DCA<br></a></div></div><a class="dropdown-item text-success display-4" href="decentralized-crypto-exchanges.html" aria-expanded="false">DEX - P2P</a><a class="dropdown-item text-success display-4" href="bitcoin-exchange.html" aria-expanded="false">Exchanges</a><a class="dropdown-item text-success display-4" href="crypto-exchange-broker.html" aria-expanded="false">Broker</a><a class="dropdown-item text-success display-4" href="buy-bitcoin-atm-exchange.html" aria-expanded="false">ATM</a><a class="dropdown-item text-success display-4" href="otc-crypto-trading.html" aria-expanded="false">OTC</a></div></li><li class="nav-item dropdown">
+                    <a class="nav-link link dropdown-toggle text-success display-4" href="content.html" data-toggle="dropdown-submenu" aria-expanded="false"><span class="icon54-v3-graduation-hat mbr-iconfont mbr-iconfont-btn" style="font-size: 25px;"></span>Wissen</a>
+                    <div class="dropdown-menu"><a class="dropdown-item text-success display-4" href="content.html" aria-expanded="false">Beginne hier</a><a class="dropdown-item text-success display-4" href="bitcoin-introduction.html" aria-expanded="false">Einführung</a><a class="dropdown-item text-success display-4" href="defi-revolution.html" aria-expanded="false">DeFi</a>
+                        <div class="dropdown"><a class="dropdown-item dropdown-toggle text-success display-4" href="#" data-toggle="dropdown-submenu" aria-expanded="false">Wallets</a>
+                            <div class="dropdown-menu dropdown-submenu"><a class="dropdown-item text-success display-4" href="wallet-seed-privatekey.html" aria-expanded="false">Privatekeys &amp;
+                                    Seeds</a> <a class="dropdown-item text-success display-4" href="bitcoin-transactions.html" aria-expanded="false">Transaktionen</a><a class="dropdown-item text-success display-4" href="multisignatur-wallet.html" aria-expanded="false">Multisignatur-Scripte</a><a class="dropdown-item text-success display-4" href="best-software-wallet-apps.html" aria-expanded="false">Software Wallets</a><a class="dropdown-item text-success display-4" href="hardware-wallet-cold-storage.html" aria-expanded="false">Hardware Wallets und Cold storage</a>
+                                <div class="dropdown"><a class="dropdown-item dropdown-toggle text-success display-4" href="#" aria-expanded="false" data-toggle="dropdown-submenu">Vanity Adressen</a>
+                                    <div class="dropdown-menu dropdown-submenu"><a class="dropdown-item text-success display-4" href="custom-bitcoin-vanity-address.html" aria-expanded="false">Einführung</a><a class="dropdown-item text-success display-4" href="https://vanity-address.bitcoin-uni.de/sites/vanity-address-guide.html" aria-expanded="false">Guide</a><a class="dropdown-item text-success display-4" href="https://vanity-address.bitcoin-uni.de/sites/faq-vanity-address.html" aria-expanded="false">FAQ</a></div>
+                                </div><a class="dropdown-item text-success text-primary display-4" href="wallet-glossar.html" aria-expanded="false">Glossar</a>
+                            </div>
+                        </div>
+                        <a class="dropdown-item text-success display-4" href="blockchain-explorer.html" aria-expanded="false">Blockchain Explorer</a>
+                        <div class="dropdown"><a class="dropdown-item dropdown-toggle text-success display-4" href="blockchain-consensus-algorithm.html" aria-expanded="false" data-toggle="dropdown-submenu">Blockchain Algorithmen</a>
+                            <div class="dropdown-menu dropdown-submenu"><a class="dropdown-item text-success display-4" href="blockchain-consensus-algorithm.html" aria-expanded="false">Konsensus A. Einführung</a><a class="dropdown-item text-success text-primary display-4" href="blockchain-trilemma.html" aria-expanded="false">Blockchain Trilemma</a><a class="dropdown-item text-success display-4" href="proof-of-work-pow.html" aria-expanded="false">Proof of Work</a><a class="dropdown-item text-success display-4" href="proof-of-stake-pos.html" aria-expanded="false">Proof of Stake</a><a class="dropdown-item text-success display-4" href="proof-of-activity-pow-pos.html" aria-expanded="false">Proof of Activity</a><a class="dropdown-item text-success display-4" href="proof-of-burn-consensus.html" aria-expanded="false">Proof of Burn</a><a class="dropdown-item text-success display-4" href="proof-of-capacity.html" aria-expanded="false">Proof of capacity</a><a class="dropdown-item text-success display-4" href="proof-of-elapsed-time-consensus.html" aria-expanded="false">Proof of elapsed time</a></div>
+                        </div>
+                        <div class="dropdown"><a class="dropdown-item dropdown-toggle text-success display-4" href="blockchain-consensus-algorithm.html" aria-expanded="false" data-toggle="dropdown-submenu">Blockchain Technologien</a>
+                            <div class="dropdown-menu dropdown-submenu"><a class="dropdown-item text-success display-4" href="blockain-technology-overview.html" aria-expanded="false">Blockchain Technologien</a><a class="dropdown-item text-success display-4" href="atomic-swaps-btc-exchange.html" aria-expanded="false">Atomic &amp; LN swaps<br></a><a class="dropdown-item text-success display-4" href="decentrlized-applications-dapps.html" aria-expanded="false">dApps &amp; DAO</a><a class="dropdown-item text-success text-primary display-4" href="btc-lightning-network.html" aria-expanded="false">Lightning Network</a><a class="dropdown-item text-success display-4" href="liquid-network-bitcoin-sidechain.html" aria-expanded="false">Liquid Network</a><a class="dropdown-item text-success display-4" href="smart-contract-blockchain.html" aria-expanded="false">Smart Contracts<br></a><a class="dropdown-item text-success display-4" href="segwit-segregated-witness.html" aria-expanded="false">Segregated Witness</a><a class="dropdown-item text-success display-4" href="blockchain-sidechains.html" aria-expanded="false">Sidechains</a><a class="dropdown-item text-success display-4" href="web-3-next-generation-internet.html" aria-expanded="false">Web 3.0</a></div>
+                        </div>
+                        <div class="dropdown"><a class="dropdown-item dropdown-toggle text-success display-4" href="bitcoin-privacy.html#content5-6z" aria-expanded="false" data-toggle="dropdown-submenu">Privatsphäre</a>
+                            <div class="dropdown-menu dropdown-submenu">
+                                <a class="dropdown-item text-success display-4" href="comming-soon.html" aria-expanded="false">Transaktionsmixer</a>
+                                    
+                                <a class="dropdown-item text-success display-4" href="schnorr-signatures-blockchain-privacy-protocol.html" aria-expanded="false">Schnorr Signaturen<br></a><a class="dropdown-item text-success text-primary display-4" href="comming-soon.html" aria-expanded="false">Privacy Wallets<br></a>
+                            </div>
+                        </div>
+                        <div class="dropdown"><a class="dropdown-item dropdown-toggle text-success display-4" href="#" aria-expanded="false" data-toggle="dropdown-submenu">Nodes</a>
+                            <div class="dropdown-menu dropdown-submenu"><a class="dropdown-item text-success display-4" href="https://bitcoin.org/en/download" aria-expanded="false" target="_blank">Bitcoin Core</a><a class="dropdown-item text-success display-4" href="https://btcpayserver.org/" aria-expanded="false" target="_blank">BTCPayServer LN</a><a class="dropdown-item text-success display-4" href="https://github.com/rootzoll/raspiblitz" aria-expanded="false" target="_blank">Raspiblitz&nbsp;LN </a><a class="dropdown-item text-success display-4" href="https://fulmo.org/" aria-expanded="false" target="_blank">Fulmo&nbsp;LN </a><a class="dropdown-item text-success display-4" href="https://samouraiwallet.com/dojo" aria-expanded="false" target="_blank">Dojo</a></div>
+                        </div>
+                    </div>
+                </li>
+                
+                
+                <li class="nav-item dropdown"><a class="nav-link link dropdown-toggle text-success display-4" href="#" aria-expanded="false" data-toggle="dropdown-submenu">Services<font face="mobirise-icons-bold">
+                        </font></a>
+                    <div class="dropdown-menu"><a class="dropdown-item text-success display-4" href="beratung.html" aria-expanded="false">Beratung &amp; Coaching</a><a class="dropdown-item text-success display-4" href="https://btcpayserver.bitcoin-uni.de/" aria-expanded="false" target="_blank">BTCPayServer</a><a class="dropdown-item text-success display-4" href="https://vanity-address.bitcoin-uni.de/" aria-expanded="false" target="_blank">Vanity Adressen
+                            Generator</a></div>
+                </li>
+                <li class="nav-item dropdown"><a class="nav-link link dropdown-toggle text-success display-4" href="#" aria-expanded="false" data-toggle="dropdown-submenu">Tools<font face="mobirise-icons-bold">
+                        </font></a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item text-success text-primary display-4" href="satoshi-price-calculator.html" aria-expanded="false">Satoshi Preis Rechner</a><div class="dropdown"><a class="dropdown-item dropdown-toggle text-success display-4" href="#" aria-expanded="false" data-toggle="dropdown-submenu">Splitkey merging tool</a>
+                            <div class="dropdown-menu dropdown-submenu"><a class="dropdown-item text-success display-4" href="https://github.com/sashmaaan/VanityAddressMerger" aria-expanded="false" target="_blank">Github Vollversion</a><a class="dropdown-item text-success display-4" href="https://bitcoin-uni.de/vanityAddressMerger/" aria-expanded="false" target="_blank">Chrome PWA App</a><a class="dropdown-item text-success display-4" href="https://siasky.net/_ADKOyY3bx9RyMcQCahX7Jbw87Gn5sBG8eRrmX7wkMbkPA/" aria-expanded="false" target="_blank">Web3.0 App</a><a class="dropdown-item text-success display-4" href="https://vanity-address.bitcoin-uni.de/keymerging" aria-expanded="false" target="_blank">WebApp</a></div>
+                        </div><a class="dropdown-item text-success text-primary display-4" href="tx-size-calculator.html" aria-expanded="false">Transaction Size Calculator</a><a class="dropdown-item text-success text-primary display-4" href="extended-public-key-converter.html" aria-expanded="false">Public Key Converter</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown"><a class="nav-link link dropdown-toggle text-success display-4" href="#" aria-expanded="false" data-toggle="dropdown-submenu">Glossar<font face="mobirise-icons-bold"></font></a><div class="dropdown-menu"><a class="dropdown-item text-success display-4" href="bitcoin-blockchain-glossar.html" aria-expanded="false">Bitcoin technisches Glossar</a><a class="dropdown-item text-success display-4" href="wallet-glossar.html" aria-expanded="false">Wallet Glossar</a><a class="dropdown-item text-success display-4" href="comming-soon.html" aria-expanded="false">Blockchain &amp; DLT Glossar</a><a class="dropdown-item text-success display-4" href="comming-soon.html" aria-expanded="false">DeFi Glossar</a></div></li>
+                <li class="nav-item"><a class="nav-link link text-success display-4" href="bitcoin-links-ressourcen.html" aria-expanded="false">Links<font face="mobirise-icons-bold">
+                        </font></a></li>
+                
+                <li class="nav-item"><a class="nav-link link text-success display-4" href="about.html" aria-expanded="false">About<font face="mobirise-icons-bold"></font></a></li>
+                <li class="nav-item"><a class="nav-link link text-success display-4" href="about.html" aria-expanded="false">
+                        <font face="mobirise-icons-bold"></font>
+                    </a></li>
+               
+                <li class="nav-item"><a class="nav-link link text-success display-4" href="about.html" aria-expanded="false">
+                        <font face="mobirise-icons-bold"></font>
+                    </a></li>
+                <li class="nav-item"><a class="nav-link link text-success display-4" href="about.html" aria-expanded="false">
+                        <font face="mobirise-icons-bold"></font>
+                    </a></li>
+              
+          
+                
+                
+                
+                <li class="nav-item"><a class="nav-link link text-success display-4" href="about.html" aria-expanded="false">
+                        <font face="mobirise-icons-bold"></font>
+                    </a></li></ul>
+            <div class="navbar-buttons mbr-section-btn"><a class="btn btn-sm btn-success display-4" href="https://vanity-address.bitcoin-uni.de/" target="_blank"><span class="fa fa-bitcoin mbr-iconfont mbr-iconfont-btn"></span>
+                    Vanity Adresse</a></div>
+        </div>
+    </nav>
+</section>
+
+<section class="mbr-section content5 cid-s8nLaSmccW mbr-parallax-background" id="content5-n">
+
+    
+
+    <div class="mbr-overlay" style="opacity: 0.5; background-color: rgb(35, 35, 35);">
+    </div>
+
+    <div class="container">
+        <div class="media-container-row">
+            <div class="title col-12 col-md-8">
+                <h2 class="align-center mbr-bold mbr-white pb-3 mbr-fonts-style display-1"><br><span style="font-weight: normal;"><br>Bitcoin Wallet<br><em>Private keys </em></span><em><br><span style="font-weight: normal;">&amp; Seeds</span></em></h2>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mbr-section content4 cid-s8nLbKcETc" id="content4-o">
+
+    
+
+    <div class="container">
+        <div class="media-container-row">
+            <div class="title col-12 col-md-8">
+                <h2 class="align-center pb-3 mbr-fonts-style display-2">
+                    Wie funktionieren Wallets?</h2>
+                <h3 class="mbr-section-subtitle align-center mbr-light mbr-fonts-style display-5">In diesem Beitrag erfahren Sie alles, über die Funktion der Wallet und die Bedeutung der Schlüsselpaare, Privater, öffentlicher Schlüssel und Mnemonic Seeds, wie Sie ein Wallet erstellen und auf was Sie besonders achten müssen!</h3>
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mbr-section article content1 cid-s8nLjNBhVh" id="content1-s">
+    
+     
+
+    <div class="container">
+        <div class="media-container-row">
+            <div class="mbr-text col-12 mbr-fonts-style display-7 col-md-8"><p><strong>Was ist dieses Wallet?
+</strong></p><p>Das Wallet ist die primäre Nutzerschnittstelle, die digitale Geldbörse, sie kontrolliert den Zugriff auf die digitalen Einheiten des Nutzers. Wallets enthalten keine Coins, sondern Schlüsselpaare Private &amp; öffentliche Schlüssel oder den Mnemonic Seed, sie sind der Besitznachweis für die Nutzer/in, indem die Software mithilfe des öffentlichen Schlüssels auf Transaktions-Outputs (bzw. UTXO – Unspent Transactions Output) in der Blockchain prüft.
+</p><p>
+</p><p>Es gibt 2 unterschiedliche Arten von Schlüsselpaar verfahren: die nichtdeterministische Wallet und die hierarchisch deterministische Wallet. Für die praktische Aufbewahrung gibt es grundsätzlich 3 unterschiedliche Arten von digitalen Geldbörsen, das Software Wallet, Cold Wallet &amp; Hardwarewallet. Entscheidend ist, dass eine Wallet benutzt wird, bei der der private Schlüssel oder Seed kontrolliert werden kann (export &amp; import der Schlüssel) und diese nicht bei Drittanbietern gespeichert sind.
+</p><p><em><strong>Achtung! Sollten Sie ihre privaten Schlüssel oder Seed verlieren, ist ihr Guthaben auch verloren! Sichern Sie Ihren privaten Schlüssel, bedenken Sie Umwelteinflüsse und organisieren Sie die Vererbung ihrer Schlüssel!
+</strong></em></p><p>Für die Vererbung empfiehlt die BUni Ihnen das Nachlass-Tool von Marc Steiner. Mit diesem Werkzeug können Sie in maximal 16 Schritten, schnell und einfach ein Formular aufsetzen, das Sie nach dem Ausdrucken mit allen wichtigen Informationen Ihrer digitalen Guthaben ausfüllen können.
+</p><p><br></p><p>
+</p><p>
+</p><p><strong>Was sind private key bzw. public key
+</strong></p><p>Der private key ist der Besitznachweis für Ihre Bitcoins. Ein privater Schlüssel (private key) ist vereinfacht gesagt eine Zufallszahl, die in einer Elliptische Kurven Funktion verwendet wird, der <a href="https://en.bitcoin.it/wiki/Elliptic_Curve_Digital_Signature_Algorithm" class="text-primary" target="_blank">ECDSA </a>Elliptic Curve Digital Signatures Algorithm. Bei Bitcoin wird dazu eine Elliptische Kurve mit den Parametern <a href="https://en.bitcoin.it/wiki/Secp256k1" class="text-primary" target="_blank">secp256k1 </a>verwendet mit der Gleichung:&nbsp;&nbsp;</p><p><em>y2 = x3 + 7</em></p><p><span style="font-size: 1.1rem;">An die Elliptische Kurve wird eine Tangente angelegt, die einen zweiten Schnittpunkt mit der Kurve hat, dieser Schnittpunkt definiert einen public key. Der public key wird also aus dem Private-Key abgeleitet und lässt sich vereinfach auch so darstellen: </span><em>public key = private key^n</em><span style="font-size: 1.1rem;">. Dabei ist der Faktor </span><em>n </em><span style="font-size: 1.1rem;">nicht zu bestimmen und somit ist es nicht möglich, den Privaten Schlüssel aus dem Öffentlichen Schlüssel herzuleiten!&nbsp;</span><br></p><p>Ein private key (compressed WIF) besteht aus 2^256 Möglichkeiten von verschiedenen Zahlen und Buchstaben, mit einer Zeichenfolge von 52 Zeichen.&nbsp;<span style="font-size: 1.1rem;">Das sind 1,1579*10^77‬ Keys, zum Vergleich liegt die Anzahl der Atome im sichtbaren Universum bei 10^80 bzw. 10^90!</span></p><p><span style="font-size: 1.1rem;"><br></span></p><p><strong>Mnemonische Passphrase / Mnemonic Seed
+</strong></p><p>Ein Mnemonic Seed ist eine Aneinanderreihung von mehreren Wörtern, der entweder aus 12 oder 24 Wörtern besteht. Diese Wörter beschränken sich auf 2048 Wörter, die mit dem Bitcoin-Improvement-Protokoll BIP32 eingeführt wurden, dabei ist das 12. oder 24. Wort eine Prüfsumme, darum sollte der Seed von einer Software generiert werden.
+</p><p>Mathematisch betrachtet sind es 12!*2048 bzw. 24!*2048 Möglichkeiten für die Anzahl aller Seeds. Die Software rechnet zur Generierung einer hohen Zufälligkeit mit der Entropie, die z.B. vom Nutzer erzeugt wird. Seeds und Private-Keys können durch ein zusätzliches Wort verschlüsselt werden.
+</p><p>Software &amp; Hardware Wallets können mehrere Private-Keys aus dem Seed ableiten bzw. errechnen. Der Private-Key oder Seed sollte bei einer entsprechenden Software Wallet oder Hardware Wallet exportiert und aufgeschrieben werden, oder in ein Cold Wallet gesichert werden! Der Public-Key wird automatisch in einer Software aus dem Private-Key abgeleitet, daher muss er nicht zwingend gesichert werden.
+</p><p><br></p><p><strong>Hierarchisch Deterministische Wallet
+</strong></p><p>Das als deterministische Wallet bekannte Verfahren leitet die Schlüssel aus einem Master-Schlüssel mithilfe einer Einwegs Hash-Funktion ab, der Master Schlüssel ist als Seed bekannt. Alle Schlüssel dieses Typs können erneut aus dem Seed abgeleitet werden.
+</p><p>Die am häufigsten verwendete Methode bedient sich einer Baum Struktur, von „Parent“ und deren folgenden „Child“ Schlüsseln. Aufgrund dieser Baum Struktur wird das Verfahren als hierarchisch deterministisch kurz HD Wallet bezeichnet.
+</p><p><br></p><p><strong>Multisignatur Wallet
+</strong></p><p>Multi-Signatur Wallets ermöglichen es mehreren Parteien, Zugriff auf ein und dasselbe Guthaben zu gewährleisten. In der Blockchain ist zu sehen, welche Privaten Schlüssel eine Transaktion genehmigt haben. Es gibt unterschiedliche Kombinationen zur Multi-Signatur, die folgenden Beschreibungen sind Beispiele:
+</p><p>1 von 2 Gemeinschaftskonto - Zwei Schlüssel kontrollieren das Guthaben, bei einer Transaktion ist nur eine Signatur notwendig.
+</p><p>2 von 2 Gemeinschaftskonto - Beide Schlüssel müssen eine Transaktion signieren. Oder der zweite Schlüssel wird von derselben Person als 2 Faktor Authentifizierung verwendet.
+</p><p>2 von 3 Sparkonto der Eltern für das Kind - Mit der Zustimmung der Eltern kann das Kind Geld ausgeben, und das Geld kann dem Kind nicht weggenommen werden.
+</p><p>3 von 5 - Drei von fünf Personen müssen eine Transaktion signieren, damit sie gültig ist. Verringert das Risiko von Veruntreuung, Hacking etc..
+</p><p>Im Electrum Wallet können Multi-Signatur Wallets mit bis zu 15 Mitsignierern erstellt werden, wobei von einem/r Signierer*in bis zu 15 Signierer*innen erforderlich sind für eine gültige Transaktion.
+</p><p><br></p><p><strong>Adressen
+</strong></p><p>Es ist nicht wichtig, alles im Detail zu verstehen; wichtig ist für die Nutzung, dass Adressen öffentliche Schlüssel repräsentieren. Die Adresse wird selbsterklärend dafür verwendet, UTXO/Transaktionen/Guthaben bzw. Bitcoins zu erhalten, oder zu senden, sie erfüllt also die Funktion einer E-Mail Adresse.
+</p><p><span style="font-size: 1.1rem;">Die unterschiedlichen Adressformate unterscheiden sich äußerlich von dem Präfix, also den ersten Zeichen der Adresse und der Zeichenketten länge.&nbsp;</span><br></p><p><br></p><p><strong>Legacy oder Pay-to-Public-Key-Hash (P2PKH) Adresse
+</strong></p><p>Die Legacy Adresse ist das ursprüngliche Adressformat, sie hat als Präfix eine 1, ist also immer an dem ersten Zeichen zu erkennen. Die Software hasht den öffentlichen Schlüssel erst mit SHA256 und dann mit RIPEMD-160.Dann fügt sie an das Ergebnis die Bytes 00 als Präfix an den Anfang an – das ist der Grund weshalb P2PKH-Adressen mit einer 1 beginnen – und noch vier Prüfsummen-Bytes an das Ende.
+</p><p>Die vier Prüfsummen-Bytes werden erzeugt, indem die Wallet die RIPEMD-160 Hash inklusive Präfix zweimal mit SHA 256 hasht und dann die ersten vier Bytes des Ergebnisses nimmt. Die so bearbeitete RIPEMD-160 Hash, die noch hexadezimal ist, wird in das alphanumerische base58 konvertiert, und schon haben wir die Legacy Adresse.
+</p><p>Die Adresse ist nun besser zu lesen, da sie viel kürzer als der Public-Key ist, die Prüfsumme verhindert, dass Tippfehler gemacht werden. Wenn also eine Adresse in der Wallet Software eingefügt wird, werden Präfix und Prüfsumme kontrolliert.
+</p><p>Diese Standard Adresse ist mit den Adressformaten P2SH &amp; Native SegWit Bech32 kompatibel, kann SegWit aber nicht nutzen. Die Transaktionsgebühr liegt bei 1mBTC = 0.001BTC und ist aufgrund des umgerechneten Preises natürlich nicht mehr zeitgemäß.
+</p><p><br></p><p><strong>Pay-to-Script-Hash P2SH Adresse
+</strong></p><p>Das Pay-to-Script-Hash Verfahren wurde mit dem BIP16 2012 eingeführt. Beim P2SH wird nicht an den Hash eines öffentlichen Schlüssels gezahlt, sondern an den Hash eines Scriptes. Es muss also nicht die Signatur, die zu einem bestimmten öffentlichen Schlüssel passt, vorgelegt werden, sondern ein Script, das eine bestimmte Hash hat.
+</p><p>Diese Adressen ermöglichen es, unterschiedliche Methoden einzuführen, um sich als Eigentümer einer UTXO auszuweisen, sie ermöglichen z.B. Multi-Signatur Adressen (Multi-Sig-Adress), bei denen mehrere Parteien eine Transaktion signieren müssen.
+</p><p>Seit SegWit gibt es die Nested P2SH, sie nutzt SegWit, ist ebenfalls mit allen Adressformaten kompatibel, kann allerdings nicht das volle Potential des Segregated Witness (kurz SegWit wird in 7.1 ausführlich erläutert) nutzen und benötigt sogar 10% mehr Speicher. Das Adresspräfix ist die Ziffer 3 gefolgt von einem Großbuchstaben, die Länge beträgt 34 Zeichen.
+</p><p><br></p><p><span style="font-size: 1.1rem;"><strong>Native Segwit - Bech32 Adresse&nbsp;</strong></span></p><p>Dieses Adressformat ist das fortschrittlichste, wenn diese Adresse vom Sender und Empfängerin benutzt wird, wird das volle Potential von SegWit genutzt, es können sehr geringe Gebühren eingestellt werden da der Speicherbedarf für die Blockchain sehr gering ist. Ein weiterer Vorteil ist die Lesbarkeit, indem Kleinbuchstaben verwendet werden.
+</p><p>Prefix: bc1q
+</p><p><br></p><p><strong>Testnet Adresse
+</strong></p><p>Testnet Adressen sind ausschließlich für das Testnetzwerk des Bitcoin vorgesehen, die P2PKH beginnen mit dem Buchstaben m oder n. Das Senden von Guthaben aus dem Mainnet führt zum Verlust des Guthaben. Testnet Bech32 beginnen mit tb1.
+</p><p><br></p><p><strong>Das musst du beim erstellen der Wallet beachten!  Software  - OFFLINE -
+</strong></p><p>Du bist soweit, dein erstes Wallet zu erstellen, es sollte natürlich ein modernes Adressformat benutzt werden, wie z.B. das Pay-to-Script-Hash (P2SH) oder Native SegWit/Bech32 für günstige Transaktionen und damit geringere Speicherbelastung für die Blockchain.
+</p><p>Neben dem Adressformat können verschiedene Wallet Typen ausgewählt werden. Soll es sich um eine HD-Wallet handeln, für die nur ein Seed zum sichern nötig ist, ein einfaches Schlüsselpaar SECP256k1 oder sogar eine Multisignatur Wallet? Diese aufgezählten kannst du im advanced Mode im Bluewallet (<a href="best-software-wallet-apps.html" class="text-primary">Software Wallet</a>) auswählen.
+</p><p>Sei beim erstellen des Seeds oder privaten Schlüssels zur Sicherheit Offline!
+</p><p>Sichere deinen Seed. Schreibe ihn auf, stanze ihn in ein Stück Metall ein, damit dieser vor Umwelteinflüssen sicher ist, dies ist nun dein Cold storage- bzw. Paper Wallet! Es gibt eine Reihe von Lösungen für die sichere Aufbewahrung. Ein Stück Papier ist nicht besonders zu empfehlen, da es nicht gegen Umwelteinflüsse resistent ist - es sei denn es liegt in einem feuerfesten und wasserdichten Tresor.&nbsp;
+</p><p>Wie eingangs schon erwähnt, sollte die Vererbung ihrer Schlüssel und Seeds organisiert sein. Zu Diesem Thema empfehle ich das Buch von Marc Steiner und sein <a href="https://marcsteiner.tech/bitcoin-nachlass-tool" class="text-primary" target="_blank">Nachlass-Tool</a><span style="font-size: 1.1rem;">!</span><br></p></div>
+        </div>
+    </div>
+</section>
+
+<section class="features18 popup-btn-cards cid-st5eUcnqUh" id="features18-l5">
+
+    
+
+    
+    <div class="container">
+        <h2 class="mbr-section-title pb-3 align-center mbr-fonts-style display-2">
+            <br>Weitere Beiträge<br></h2>
+        
+        <div class="media-container-row pt-5 ">
+            <div class="card p-3 col-12 col-md-6 col-lg-3">
+                <div class="card-wrapper ">
+                    <div class="card-img">
+                        <div class="mbr-overlay"></div>
+                        <div class="mbr-section-btn text-center"><a href="wallet-seed-privatekey.html" class="btn btn-primary display-4">Lesen</a></div>
+                        <img src="assets/images/mbr-1-676x478.jpg" alt="" title="">
+                    </div>
+                    <div class="card-box">
+                        <h4 class="card-title mbr-fonts-style display-7"><strong>Privatekey / Publickey &amp; Seed</strong></h4>
+                        <p class="mbr-text mbr-fonts-style align-left display-7">
+                            Lernen Sie die Grundlagen zur Aufbewahrung von Kryptowährungen.<br>Was sind Seed und Private key?</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card p-3 col-12 col-md-6 col-lg-3">
+                <div class="card-wrapper">
+                    <div class="card-img">
+                        <div class="mbr-overlay"></div>
+                        <div class="mbr-section-btn text-center"><a href="best-software-wallet-apps.html" class="btn btn-primary display-4">Lesen</a></div>
+                        <img src="assets/images/software-wallets-2-676x561.jpeg" alt="" title="">
+                    </div>
+                    <div class="card-box">
+                        <h4 class="card-title mbr-fonts-style display-7"><strong>Software Wallets</strong><br><strong><br></strong></h4>
+                        <p class="mbr-text mbr-fonts-style display-7">Auserlesene Bitcoin Software Wallets im Überblick. Mobile Apps für IOS &amp; Android, sowie Desktop Clients.&nbsp;<br><br></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-3 col-12 col-md-6 col-lg-3">
+                <div class="card-wrapper">
+                    <div class="card-img">
+                        <div class="mbr-overlay"></div>
+                        <div class="mbr-section-btn text-center"><a href="hardware-wallet-cold-storage.html" class="btn btn-primary display-4">Lesen</a></div>
+                        <img src="assets/images/hardware-wallet-3-676x512.jpeg" alt="" title="">
+                    </div>
+                    <div class="card-box">
+                        <h4 class="card-title mbr-fonts-style display-7"><strong>Cold storage &amp; Hardware Wallets</strong></h4>
+                        <p class="mbr-text mbr-fonts-style display-7">Cold Storage und Hardware wallets sind die sicherste Speichermöglichkeit, für Kryptowährungen.&nbsp;<br><br></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-3 col-12 col-md-6 col-lg-3">
+                <div class="card-wrapper">
+                    <div class="card-img">
+                        <div class="mbr-overlay"></div>
+                        <div class="mbr-section-btn text-center"><a href="bitcoin-transactions.html" class="btn btn-primary display-4">Mehr Info</a></div>
+                        <img src="assets/images/tx-3-492x321.png" alt="" title="">
+                    </div>
+                    <div class="card-box">
+                        <h4 class="card-title mbr-fonts-style display-7"><strong>
+                            Transaktionen</strong><br><strong><br></strong></h4>
+                        <p class="mbr-text mbr-fonts-style display-7">Wie funktionieren Transaktionen und was muss beachten werden!<br>Wie werden die&nbsp; Gebühren richtig eingestellt?<br></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features18 popup-btn-cards cid-st4s451qrO" id="features18-kn">
+
+    
+
+    
+    <div class="container">
+        <h2 class="mbr-section-title pb-3 align-center mbr-fonts-style display-2"><br>Kryptowährungen kaufen &amp; handeln</h2>
+        
+        <div class="media-container-row pt-5 ">
+            <div class="card p-3 col-12 col-md-6 col-lg-4">
+                <div class="card-wrapper ">
+                    <div class="card-img">
+                        <div class="mbr-overlay"></div>
+                        <div class="mbr-section-btn text-center"><a href="five-ways-to-buy-bitcoin.html" class="btn btn-primary display-4">Lesen</a></div>
+                        <img src="assets/images/mbr-3-1920x1280.jpeg" alt="" title="">
+                    </div>
+                    <div class="card-box">
+                        <h4 class="card-title mbr-fonts-style display-7"><strong>Einführung</strong></h4>
+                        <p class="mbr-text mbr-fonts-style align-left display-7">Welche Möglichkeiten gibt es Bitcoin zu kaufen?&nbsp;<br></p>
+                    </div>
+                </div>
+            </div>
+            <div class="card p-3 col-12 col-md-6 col-lg-4">
+                <div class="card-wrapper">
+                    <div class="card-img">
+                        <div class="mbr-overlay"></div>
+                        <div class="mbr-section-btn text-center"><a href="bitcoin-exchange.html" class="btn btn-primary display-4">Lesen</a></div>
+                        <img src="assets/images/mbr-1-1920x1280.jpeg" alt="" title="">
+                    </div>
+                    <div class="card-box">
+                        <h4 class="card-title mbr-fonts-style display-7"><strong>Ƀ CEX - zentralisierte Exchanges</strong></h4>
+                        <p class="mbr-text mbr-fonts-style display-7">Was sind zentralisierte Börsen und wie funktionieren sie?<br> 
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-3 col-12 col-md-6 col-lg-4">
+                <div class="card-wrapper">
+                    <div class="card-img">
+                        <div class="mbr-overlay"></div>
+                        <div class="mbr-section-btn text-center"><a href="crypto-exchange-broker.html" class="btn btn-primary display-4">Lesen</a></div>
+                        <img src="assets/images/trading-492x369.jpg" alt="" title="">
+                    </div>
+                    <div class="card-box">
+                        <h4 class="card-title mbr-fonts-style display-7"><strong>Ƀ CEX Broker</strong></h4>
+                        <p class="mbr-text mbr-fonts-style display-7">Wie funktionieren Kryyptowährungsbroker?<br></p>
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+    </div>
+</section>
+
+<section class="features18 popup-btn-cards cid-st4s28Tyhu" id="features18-km">
+
+    
+
+    
+    <div class="container">
+        
+        
+        <div class="media-container-row pt-5 ">
+            <div class="card p-3 col-12 col-md-6 col-lg-4">
+                <div class="card-wrapper ">
+                    <div class="card-img">
+                        <div class="mbr-overlay"></div>
+                        <div class="mbr-section-btn text-center"><a href="buy-bitcoin-atm-exchange.html" class="btn btn-primary display-4">Lesen</a></div>
+                        <img src="assets/images/mbr-2-676x676.png" alt="" title="">
+                    </div>
+                    <div class="card-box">
+                        <h4 class="card-title mbr-fonts-style display-7"><strong>Ƀ ATM -Automaten</strong></h4>
+                        <p class="mbr-text mbr-fonts-style align-left display-7">Wie funktioniert ein Bitcoin Automat und wo sind sie zu finden?<br></p>
+                    </div>
+                </div>
+            </div>
+            <div class="card p-3 col-12 col-md-6 col-lg-4">
+                <div class="card-wrapper">
+                    <div class="card-img">
+                        <div class="mbr-overlay"></div>
+                        <div class="mbr-section-btn text-center"><a href="decentralized-crypto-exchanges.html" class="btn btn-primary display-4">Lesen</a></div>
+                        <img src="assets/images/bisq-520x390.jpeg" alt="" title="">
+                    </div>
+                    <div class="card-box">
+                        <h4 class="card-title mbr-fonts-style display-7"><strong>DEX - Peer to Peer Exchange</strong></h4>
+                        <p class="mbr-text mbr-fonts-style display-7">Was sind dezentrale P2P Exchanges<br>und wie funktionieren sie?<br></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-3 col-12 col-md-6 col-lg-4">
+                <div class="card-wrapper">
+                    <div class="card-img">
+                        <div class="mbr-overlay"></div>
+                        <div class="mbr-section-btn text-center"><a href="otc-crypto-trading.html" class="btn btn-primary display-4">Lesen</a></div>
+                        <img src="assets/images/office-336368-1280-676x453.jpeg" alt="" title="">
+                    </div>
+                    <div class="card-box">
+                        <h4 class="card-title mbr-fonts-style display-7"><strong>Ƀ OTC - Over the Counter</strong></h4>
+                        <p class="mbr-text mbr-fonts-style display-7">Wie funktioniert 'Over the counter' Handel?<br></p>
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+    </div>
+</section>
+
+<section class="features18 popup-btn-cards cid-sbrR3Q0dYh" id="features18-ca">
+
+    
+
+    
+    <div class="container">
+        <h2 class="mbr-section-title pb-3 align-center mbr-fonts-style display-2">
+            <br>Hardware Wallets</h2>
+        
+        <div class="media-container-row pt-5 ">
+            <div class="card p-3 col-12 col-md-6 col-lg-3">
+                <div class="card-wrapper ">
+                    <div class="card-img">
+                        <div class="mbr-overlay"></div>
+                        <div class="mbr-section-btn text-center"><a href="https://shop.ledger.com/pages/ledger-nano-x?r=de5e54b5d23c" class="btn btn-primary display-4">Zum Ledger Shop</a></div>
+                        <img src="assets/images/ledger-x-2-665x674.jpeg" alt="" title="">
+                    </div>
+                    <div class="card-box">
+                        <h4 class="card-title mbr-fonts-style display-5">Leder Nano S &amp; X</h4>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="card p-3 col-12 col-md-6 col-lg-3">
+                <div class="card-wrapper">
+                    <div class="card-img">
+                        <div class="mbr-overlay"></div>
+                        <div class="mbr-section-btn text-center"><a href="https://shop.trezor.io/?offer_id=10&aff_id=3287" class="btn btn-primary display-4">Zum Trezor Shop</a></div>
+                        <img src="assets/images/trezor-wallet-4-600x600.png" alt="" title="">
+                    </div>
+                    <div class="card-box">
+                        <h4 class="card-title mbr-fonts-style display-5">Trezor Model T &amp; One</h4>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-3 col-12 col-md-6 col-lg-3">
+                <div class="card-wrapper">
+                    <div class="card-img">
+                        <div class="mbr-overlay"></div>
+                        <div class="mbr-section-btn text-center"><a href="https://keepkey.myshopify.com/?afmc=1xd&utm_campaign=1xd&utm_source=leaddyno&utm_medium=affiliate" class="btn btn-primary display-4">Zum KeepKey Shop</a></div>
+                        <img src="assets/images/keepkey-491x368.jpg" alt="" title="">
+                    </div>
+                    <div class="card-box">
+                        <h4 class="card-title mbr-fonts-style display-5">KeepKey<br><br></h4>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-3 col-12 col-md-6 col-lg-3">
+                <div class="card-wrapper">
+                    <div class="card-img">
+                        <div class="mbr-overlay"></div>
+                        <div class="mbr-section-btn text-center"><a href="https://shiftcrypto.shop/?ref=wgcFJ0AQv5" class="btn btn-primary display-4">Zum Bitbox Shop</a></div>
+                        <img src="assets/images/bitbox-1-491x276.png" alt="" title="">
+                    </div>
+                    <div class="card-box">
+                        <h4 class="card-title mbr-fonts-style display-5">BitBox02<br><br></h4>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="header7 cid-sos0GV3Zy5" id="header7-gh">
+
+    
+
+    
+
+    <div class="container">
+        <div class="media-container-row">
+
+            <div class="media-content align-right">
+                <h1 class="mbr-section-title mbr-white pb-3 mbr-fonts-style display-1">Einfach Bitcoin kaufen mit Relai!</h1>
+                <div class="mbr-section-text mbr-white pb-3">
+                    <p class="mbr-text mbr-fonts-style display-5">Mit Sepa Überweisungen direkt auf das eigene Wallet oder Regelmäßig kaufen, mit einem Dauerauftrag.<br>Spare 0.5% Gebühren mit dem Relai Botschafter Code:&nbsp;&nbsp;<strong>REL326&nbsp;</strong><br>Kein KYC, nur Verifizierung mittels Iban.</p>
+                </div>
+                <div class="mbr-section-btn"><a class="btn btn-md btn-primary display-4" href="https://relai.ch/" target="_blank">MEHR INFO</a></div>
+            </div>
+
+            <div class="mbr-figure" style="width: 100%;"><iframe class="mbr-embedded-video" src="https://www.youtube.com/embed/ZfO3Gk2Zax8?rel=0&amp;amp;showinfo=0&amp;autoplay=0&amp;loop=0" width="1280" height="720" frameborder="0" allowfullscreen></iframe></div>
+
+        </div>
+    </div>
+</section>
+
+<section class="footer4 cid-sRz5Li9BP8" once="footers" id="footer4-qh">
+
+    
+    
+    <div class="container">
+        <div class="row mbr-white">
+            <div class="col-6 col-lg-3">
+                <div class="media-wrap col-md-4 col-12">
+                    
+                        <img src="assets/images/kompl.-b-day-mode-14x-8-192x151.png" alt="Bitcoin Uni">
+                    
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <h5 class="mbr-section-subtitle mbr-fonts-style mb-2 display-7"><strong>Kontakt</strong></h5>
+                <p class="mbr-text mbr-fonts-style mb-4 display-4"><a href="about.html" class="text-success text-primary">About</a><br><a href="beratung.html#content4-qc" class="text-success">Kontakt</a><br><a href="https://bitcoin-uni.de/about.html" class="text-primary"></a><a href="mailto:info@bitcoin-uni.de" class="text-success">info@bitcoin-uni.de</a><br></p>
+                <h5 class="mbr-section-subtitle mbr-fonts-style mb-3 display-7">
+                    <strong>Follow Us!</strong></h5>
+                <div class="social-row display-7">
+                    <div class="soc-item">
+                        <a href="https://twitter.com/cryptxraver" target="_blank">
+                            <span class="mbr-iconfont socicon-twitter socicon" style="color: rgb(241, 214, 0); fill: rgb(241, 214, 0); font-size: 30px;"></span>
+                        </a>
+                    </div>
+                    <div class="soc-item">
+                        <a href="https://www.instagram.com/bitcoin_cypher_uni/" target="_blank">
+                            <span class="mbr-iconfont socicon-instagram socicon" style="color: rgb(241, 214, 0); fill: rgb(241, 214, 0); font-size: 30px;"></span>
+                        </a>
+                    </div>
+                    <div class="soc-item">
+                        <a href="https://bitcointalk.org/index.php?topic=5281176.0" target="_blank">
+                            <span class="mbr-iconfont fa-bitcoin fa" style="color: rgb(241, 214, 0); fill: rgb(241, 214, 0); font-size: 30px;"></span>
+                        </a>
+                    </div>
+                    <div class="soc-item ">
+                        <a href="https://medium.com/@bitcoin-uni" style="background-color: #000" target="_blank">
+                            <span class="mbr-iconfont socicon-medium socicon" style="color: rgb(241, 214, 0); fill: rgb(241, 214, 0); font-size: 30px;"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <h5 class="mbr-section-subtitle mbr-fonts-style mb-2 display-7">
+                    <strong>Legal</strong></h5>
+                <ul class="list mbr-fonts-style display-4">
+                    <li class="mbr-text item-wrap"><span style="font-size: 1.1rem;"><a href="impressum-dsgvo.html" class="text-success">Impressum &amp; DSGVO&nbsp;</a></span></li><li class="mbr-text item-wrap"><span style="font-size: 1.1rem;"><a href="https://vanity-address.bitcoin-uni.de/sites/agb.html" class="text-success" target="_blank">AGB&nbsp;</a></span></li>
+                </ul>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <h5 class="mbr-section-subtitle mbr-fonts-style mb-2 display-7">
+                    <strong>Links</strong></h5>
+                <ul class="list mbr-fonts-style display-4">
+                    <li class="mbr-text item-wrap"><a href="https://vanity-address.bitcoin-uni.de/sites/faq-vanity-address.html" class="text-success" target="_blank">FAQ - Vanity Adressen</a></li><a href="https://vanity-address.bitcoin-uni.de/sites/faq-vanity-address.html" class="text-primary" target="_blank">
+                    </a><li class="mbr-text item-wrap"><a href="https://vanity-address.bitcoin-uni.de/" class="text-success" target="_blank">Vanity Adressen Generator</a></li>
+                    <li class="mbr-text item-wrap"><a href="bitcoin-links-ressourcen.html" class="text-success">Bitcoin Ressourcen</a></li>
+                </ul>
+            </div>
+            <div class="col-12 mt-4">
+                <p class="mbr-text mb-0 mbr-fonts-style copyright align-center display-7">
+                    Made with&nbsp;<strong color="red">♥</strong>&nbsp;Support us for more!<br><a href="https://live.blockcypher.com/btc/address/3BitunigscbkbD6pRpRN32S79UZqJhTxge/" class="text-success" target="_blank">3BitunigscbkbD6pRpRN32S79UZqJhTxge</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<script src="assets/web/assets/jquery/jquery.min.js"></script>
+  <script src="assets/popper/popper.min.js"></script>
+  <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+  <script src="assets/tether/tether.min.js"></script>
+  <script src="assets/smoothscroll/smooth-scroll.js"></script>
+  <script src="assets/dropdown/js/nav-dropdown.js"></script>
+  <script src="assets/dropdown/js/navbar-dropdown.js"></script>
+  <script src="assets/touchswipe/jquery.touch-swipe.min.js"></script>
+  <script src="assets/parallax/jarallax.min.js"></script>
+  <script src="assets/mbr-popup-btns/mbr-popup-btns.js"></script>
+  <script src="assets/theme/js/script.js"></script>
+  
+  
+  <script src="https://kit.fontawesome.com/090ca49637.js" crossorigin="anonymous"></script>
+ <div id="scrollToTop" class="scrollToTop mbr-arrow-up"><a style="text-align: center;"><i class="mbr-arrow-up-icon mbr-arrow-up-icon-cm cm-icon cm-icon-smallarrow-up"></i></a></div>
+  
+</body>
+</html>

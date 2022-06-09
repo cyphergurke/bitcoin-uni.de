@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+    <link rel="shortcut icon" href="/assets/images/kompl.-b-day-mode-14x-8-192x151.png" type="image/x-icon">
+    <meta name="description"
+        content="Was ist das Lightning Netzwerk? Wie kann Lightning bei der Skalierung von Bitcoin und Blockchain helfen? Was ist ein Lightning Channel und welche risiken gibt es?">
+
+
+    <title>Tapscript</title>
+    <link rel="stylesheet" href="/assets/web/assets/mobirise-icons/mobirise-icons.css">
+    <link rel="stylesheet" href="/assets/icon54-v3/style.css">
+    <link rel="stylesheet" href="/assets/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap-grid.min.css">
+    <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap-reboot.min.css">
+    <link rel="stylesheet" href="/assets/tether/tether.min.css">
+    <link rel="stylesheet" href="/assets/dropdown/css/style.css">
+    <link rel="stylesheet" href="/assets/animatecss/animate.min.css">
+    <link rel="stylesheet" href="/assets/socicon/css/styles.css">
+    <link rel="stylesheet" href="/assets/theme/css/style.css">
+    <link rel="preload" as="style" href="/assets/mobirise/css/mbr-additional.css">
+    <link rel="stylesheet" href="/assets/mobirise/css/mbr-additional.css" type="text/css">
+
+    <script src="/assets/web/assets/lazyload/lazyload.js"></script>
+
+
+
+    <meta name="theme-color" content="#f1d600">
+    <link rel="manifest" href="/assets/manifest.json">
+    <script src="/assets/sw-connect.js"></script>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-startup-image"
+        media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+        href="/assets/images/apple-launch-640x1136.png">
+    <link rel="apple-touch-startup-image"
+        media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+        href="/assets/images/apple-launch-750x1334.png">
+    <link rel="apple-touch-startup-image"
+        media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+        href="/assets/images/apple-launch-1242x2208.png">
+    <link rel="apple-touch-startup-image"
+        media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+        href="/assets/images/apple-launch-1125x2436.png">
+    <link rel="apple-touch-startup-image"
+        media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+        href="/assets/images/apple-launch-1536x2048.png">
+    <link rel="apple-touch-startup-image"
+        media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+        href="/assets/images/apple-launch-1668x2224.png">
+    <link rel="apple-touch-startup-image"
+        media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+        href="/assets/images/apple-launch-2048x2732.png">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Bitcoin Uni">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+
+
+
+    <script>
+        const P2PKH_IN_SIZE = 148;
+        const P2PKH_OUT_SIZE = 34;
+
+        const P2SH_OUT_SIZE = P2SH_P2WPKH_OUT_SIZE = P2SH_P2WSH_OUT_SIZE = 32;
+
+        const P2SH_P2WPKH_IN_SIZE = 91;
+
+        const P2WPKH_IN_SIZE = 67.75;
+        const P2WPKH_OUT_SIZE = 31;
+
+        const P2WSH_OUT_SIZE = P2TR_OUT_SIZE = 43;
+
+        const P2TR_IN_SIZE = 57.25;
+
+        const PUBKEY_SIZE = 33;
+        const SIGNATURE_SIZE = 72;
+
+        function getSizeOfScriptLengthElement(length) {
+            if (length < 75) {
+                return 1;
+            } else if (length <= 255) {
+                return 2;
+            } else if (length <= 65535) {
+                return 3;
+            } else if (length <= 4294967295) {
+                return 5;
+            } else {
+                alert('Size of redeem script is too large');
+            }
+        }
+
+        function getSizeOfVarInt(length) {
+            if (length < 253) {
+                return 1;
+            } else if (length < 65535) {
+                return 3;
+            } else if (length < 4294967295) {
+                return 5;
+            } else if (length < 18446744073709551615) {
+                return 9;
+            } else {
+                alert("Invalid var int");
+            }
+        }
+
+        function getTxOverheadVBytes(input_script, input_count, output_count) {
+            if (input_script == "P2PKH" || input_script == "P2SH") {
+                var witness_vbytes = 0;
+            } else { // Transactions with segwit inputs have extra overhead
+                var witness_vbytes = 0.25                             // segwit marker
+                    + 0.25                              // segwit flag
+                    + getSizeOfVarInt(input_count) / 4; // witness element count
+            }
+
+            return 4 // nVersion
+                + getSizeOfVarInt(input_count) // number of inputs
+                + getSizeOfVarInt(output_count) // number of outputs
+                + 4 // nLockTime
+                + witness_vbytes;
+        }
+
+        function getTxOverheadExtraRawBytes(input_script, input_count) {
+            if (input_script == "P2PKH" || input_script == "P2SH") {
+                var witness_vbytes = 0;
+            } else { // Transactions with segwit inputs have extra overhead
+                var witness_vbytes = 0.25                             // segwit marker
+                    + 0.25                              // segwit flag
+                    + getSizeOfVarInt(input_count) / 4; // witness element count
+            }
+
+            return witness_vbytes * 3;
+        }
+
+        function processForm() {
+            // Validate transaction input attributes
+            var input_count = parseInt(document.getElementById('input_count').value);
+            if (!Number.isInteger(input_count) || input_count < 0) {
+                alert('expecting positive input count, got: ' + input_count);
+                return;
+            }
+            var input_script = document.getElementById('input_script').value;
+            var input_m = parseInt(document.getElementById('input_m').value);
+            if (!Number.isInteger(input_m) || input_m < 0) {
+                alert('expecting positive signature count');
+                return;
+            }
+            var input_n = parseInt(document.getElementById('input_n').value);
+            if (!Number.isInteger(input_n) || input_n < 0) {
+                alert('expecting positive pubkey count');
+                return;
+            }
+
+            // Validate transaction output attributes
+            var p2pkh_output_count = parseInt(document.getElementById('p2pkh_output_count').value);
+            if (!Number.isInteger(p2pkh_output_count) || p2pkh_output_count < 0) {
+                alert('expecting positive p2pkh output count');
+                return;
+            }
+            var p2sh_output_count = parseInt(document.getElementById('p2sh_output_count').value);
+            if (!Number.isInteger(p2sh_output_count) || p2sh_output_count < 0) {
+                alert('expecting positive p2sh output count');
+                return;
+            }
+            var p2sh_p2wpkh_output_count = parseInt(document.getElementById('p2sh_p2wpkh_output_count').value);
+            if (!Number.isInteger(p2sh_p2wpkh_output_count) || p2sh_p2wpkh_output_count < 0) {
+                alert('expecting positive p2sh-p2wpkh output count');
+                return;
+            }
+            var p2sh_p2wsh_output_count = parseInt(document.getElementById('p2sh_p2wsh_output_count').value);
+            if (!Number.isInteger(p2sh_p2wsh_output_count) || p2sh_p2wsh_output_count < 0) {
+                alert('expecting positive p2sh-p2wsh output count');
+                return;
+            }
+            var p2wpkh_output_count = parseInt(document.getElementById('p2wpkh_output_count').value);
+            if (!Number.isInteger(p2wpkh_output_count) || p2wpkh_output_count < 0) {
+                alert('expecting positive p2wpkh output count');
+                return;
+            }
+            var p2wsh_output_count = parseInt(document.getElementById('p2wsh_output_count').value);
+            if (!Number.isInteger(p2wsh_output_count) || p2wsh_output_count < 0) {
+                alert('expecting positive p2wsh output count');
+                return;
+            }
+            var p2tr_output_count = parseInt(document.getElementById('p2tr_output_count').value);
+            if (!Number.isInteger(p2tr_output_count) || p2tr_output_count < 0) {
+                alert('expecting positive p2tr output count');
+                return;
+            }
+
+            const output_count = p2pkh_output_count + p2sh_output_count + p2sh_p2wpkh_output_count
+                + p2sh_p2wsh_output_count + p2wpkh_output_count + p2wsh_output_count + p2tr_output_count;
+
+            // In most cases the input size is predictable. For multisig inputs we need to perform a detailed calculation
+            var inputSize = 0; // in virtual bytes
+            var inputWitnessSize = 0;
+            switch (input_script) {
+                case "P2PKH":
+                    inputSize = P2PKH_IN_SIZE;
+                    break;
+                case "P2SH-P2WPKH":
+                    inputSize = P2SH_P2WPKH_IN_SIZE;
+                    inputWitnessSize = 107; // size(signature) + signature + size(pubkey) + pubkey
+                    break;
+                case "P2WPKH":
+                    inputSize = P2WPKH_IN_SIZE;
+                    inputWitnessSize = 107; // size(signature) + signature + size(pubkey) + pubkey
+                    break;
+                case "P2TR": // Only consider the cooperative taproot signing path; assume multisig is done via aggregate signatures
+                    inputSize = P2TR_IN_SIZE;
+                    inputWitnessSize = 65; // getSizeOfVarInt(schnorrSignature) + schnorrSignature;
+                    break;
+                case "P2SH":
+                    var redeemScriptSize = 1 + // OP_M
+                        input_n * (1 + PUBKEY_SIZE) + // OP_PUSH33 <pubkey>
+                        1 + // OP_N
+                        1; // OP_CHECKMULTISIG
+                    var scriptSigSize = 1 + // size(0)
+                        input_m * (1 + SIGNATURE_SIZE) + // size(SIGNATURE_SIZE) + signature
+                        getSizeOfScriptLengthElement(redeemScriptSize) + redeemScriptSize;
+                    inputSize = 32 + 4 + getSizeOfVarInt(scriptSigSize) + scriptSigSize + 4;
+                    break;
+                case "P2SH-P2WSH":
+                case "P2WSH":
+                    var redeemScriptSize = 1 + // OP_M
+                        input_n * (1 + PUBKEY_SIZE) + // OP_PUSH33 <pubkey>
+                        1 + // OP_N
+                        1; // OP_CHECKMULTISIG
+                    inputWitnessSize = 1 + // size(0)
+                        input_m * (1 + SIGNATURE_SIZE) + // size(SIGNATURE_SIZE) + signature
+                        getSizeOfScriptLengthElement(redeemScriptSize) + redeemScriptSize;
+                    inputSize = 36 + // outpoint (spent UTXO ID)
+                        inputWitnessSize / 4 + // witness program
+                        4;  // nSequence
+                    if (input_script == "P2SH-P2WSH") {
+                        inputSize += 32 + 3; // P2SH wrapper (redeemscript hash) + overhead?
+                    }
+            }
+
+            var txVBytes = getTxOverheadVBytes(input_script, input_count, output_count) +
+                inputSize * input_count +
+                P2PKH_OUT_SIZE * p2pkh_output_count +
+                P2SH_OUT_SIZE * p2sh_output_count +
+                P2SH_P2WPKH_OUT_SIZE * p2sh_p2wpkh_output_count +
+                P2SH_P2WSH_OUT_SIZE * p2sh_p2wsh_output_count +
+                P2WPKH_OUT_SIZE * p2wpkh_output_count +
+                P2WSH_OUT_SIZE * p2wsh_output_count +
+                P2TR_OUT_SIZE * p2tr_output_count;
+
+            var txBytes = getTxOverheadExtraRawBytes(input_script, input_count) + txVBytes + inputWitnessSize * input_count;
+            var txWeight = txVBytes * 4;
+
+            document.getElementById('txBytes').innerHTML = txBytes;
+            document.getElementById('txVBytes').innerHTML = txVBytes;
+            document.getElementById('txWeight').innerHTML = txWeight;
+        }
+    </script>
+
+
+
+</head>
+
+<body>
+
+
+    <section class="menu cid-s8MtYh0j11" once="menu" id="menu1-b6">
+
+
+
+        <nav
+            class="navbar navbar-expand beta-menu navbar-dropdown align-items-center navbar-fixed-top navbar-toggleable-sm">
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+                data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </button>
+
+            <div class="menu-logo">
+                <div class="navbar-brand">
+                    <span class="navbar-logo">
+                        <a href="index.html">
+                            <img src="assets/images/kompl.-b-day-mode-14x-8-192x151.png" alt="Bitcoin uni" title=""
+                                style="height: 3.8rem;">
+                        </a>
+                    </span>
+
+                </div>
+            </div>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav nav-dropdown" data-app-modern-menu="true">
+                    <li class="nav-item"><a class="nav-link link text-success display-4" href="index.html"
+                            aria-expanded="false">Home<font face="mobirise-icons-bold"></font></a></li>
+                    <li class="nav-item"><a class="nav-link link text-success display-4" href="content.html"
+                            aria-expanded="false">Blog<font face="mobirise-icons-bold"></font></a></li>
+                    <li class="nav-item dropdown"><a class="nav-link link dropdown-toggle text-success display-4"
+                            href="#" aria-expanded="false" data-toggle="dropdown-submenu">Bitcoin kaufen<font
+                                face="mobirise-icons-bold"></font></a>
+                        <div class="dropdown-menu"><a class="dropdown-item text-success display-4"
+                                href="five-ways-to-buy-bitcoin.html" aria-expanded="false">Einführung</a>
+                            <div class="dropdown"><a class="dropdown-item dropdown-toggle text-success display-4"
+                                    href="#" aria-expanded="false" data-toggle="dropdown-submenu">Bitcoin Sparplan</a>
+                                <div class="dropdown-menu dropdown-submenu"><a
+                                        class="dropdown-item text-success display-4"
+                                        href="relai-app-bitcoin-sparplar.html" aria-expanded="false">Relai DCA</a><a
+                                        class="dropdown-item text-success display-4"
+                                        href="lightning-dca-debit-card.html" aria-expanded="false">Lastbit LN
+                                        DCA<br></a></div>
+                            </div><a class="dropdown-item text-success display-4"
+                                href="decentralized-crypto-exchanges.html" aria-expanded="false">DEX - P2P</a><a
+                                class="dropdown-item text-success display-4" href="bitcoin-exchange.html"
+                                aria-expanded="false">Exchanges</a><a class="dropdown-item text-success display-4"
+                                href="crypto-exchange-broker.html" aria-expanded="false">Broker</a><a
+                                class="dropdown-item text-success display-4" href="buy-bitcoin-atm-exchange.html"
+                                aria-expanded="false">ATM</a><a class="dropdown-item text-success display-4"
+                                href="otc-crypto-trading.html" aria-expanded="false">OTC</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown open">
+                        <a class="nav-link link dropdown-toggle text-success display-4" href="content.html"
+                            data-toggle="dropdown-submenu" aria-expanded="true"><span
+                                class="icon54-v3-graduation-hat mbr-iconfont mbr-iconfont-btn"
+                                style="font-size: 22px;"></span>Wissen</a>
+                        <div class="dropdown-menu"><a class="dropdown-item text-success display-4" href="content.html"
+                                aria-expanded="false">Beginne hier</a><a class="dropdown-item text-success display-4"
+                                href="bitcoin-introduction.html" aria-expanded="false">Einführung</a><a
+                                class="dropdown-item text-success display-4" href="defi-revolution.html"
+                                aria-expanded="false">DeFi</a>
+                            <div class="dropdown open"><a class="dropdown-item dropdown-toggle text-success display-4"
+                                    href="#" data-toggle="dropdown-submenu" aria-expanded="true">Wallets</a>
+                                <div class="dropdown-menu dropdown-submenu"><a
+                                        class="dropdown-item text-success display-4" href="wallet-seed-privatekey.html"
+                                        aria-expanded="false">Privatekeys &amp;
+                                        Seeds</a> <a class="dropdown-item text-success display-4"
+                                        href="bitcoin-transactions.html" aria-expanded="false">Transaktionen</a><a
+                                        class="dropdown-item text-success display-4" href="multisignatur-wallet.html"
+                                        aria-expanded="false">Multisignatur-Scripte</a><a
+                                        class="dropdown-item text-success display-4"
+                                        href="best-software-wallet-apps.html" aria-expanded="false">Software
+                                        Wallets</a><a class="dropdown-item text-success display-4"
+                                        href="hardware-wallet-cold-storage.html" aria-expanded="false">Hardware Wallets
+                                        und Cold storage</a>
+                                    <div class="dropdown open"><a
+                                            class="dropdown-item dropdown-toggle text-success display-4" href="#"
+                                            aria-expanded="true" data-toggle="dropdown-submenu">Vanity Adressen</a>
+                                        <div class="dropdown-menu dropdown-submenu"><a
+                                                class="dropdown-item text-success display-4"
+                                                href="custom-bitcoin-vanity-address.html"
+                                                aria-expanded="false">Einführung</a><a
+                                                class="dropdown-item text-success display-4"
+                                                href="https://vanity-address.bitcoin-uni.de/sites/vanity-address-guide.html"
+                                                aria-expanded="false">Guide</a><a
+                                                class="dropdown-item text-success display-4"
+                                                href="https://vanity-address.bitcoin-uni.de/sites/faq-vanity-address.html"
+                                                aria-expanded="false">FAQ</a></div>
+                                    </div><a class="dropdown-item text-success display-4" href="page55.html"
+                                        aria-expanded="false">Glossar</a>
+                                </div>
+                            </div>
+                            <a class="dropdown-item text-success display-4" href="blockchain-explorer.html"
+                                aria-expanded="false">Blockchain Explorer</a>
+                            <div class="dropdown"><a class="dropdown-item dropdown-toggle text-success display-4"
+                                    href="blockchain-consensus-algorithm.html" aria-expanded="false"
+                                    data-toggle="dropdown-submenu">Blockchain Algorithmen</a>
+                                <div class="dropdown-menu dropdown-submenu"><a
+                                        class="dropdown-item text-success display-4"
+                                        href="blockchain-consensus-algorithm.html" aria-expanded="false">Konsensus A.
+                                        Einführung</a><a class="dropdown-item text-success display-4"
+                                        href="proof-of-work-pow.html" aria-expanded="false">Blockchain Trilemma</a><a
+                                        class="dropdown-item text-success display-4" href="proof-of-work-pow.html"
+                                        aria-expanded="false">Proof of Work</a><a
+                                        class="dropdown-item text-success display-4" href="proof-of-stake-pos.html"
+                                        aria-expanded="false">Proof of Stake</a><a
+                                        class="dropdown-item text-success display-4"
+                                        href="proof-of-activity-pow-pos.html" aria-expanded="false">Proof of
+                                        Activity</a><a class="dropdown-item text-success display-4"
+                                        href="proof-of-burn-consensus.html" aria-expanded="false">Proof of Burn</a><a
+                                        class="dropdown-item text-success display-4" href="proof-of-capacity.html"
+                                        aria-expanded="false">Proof of capacity</a><a
+                                        class="dropdown-item text-success display-4"
+                                        href="proof-of-elapsed-time-consensus.html" aria-expanded="false">Proof of
+                                        elapsed time</a></div>
+                            </div>
+                            <div class="dropdown"><a class="dropdown-item dropdown-toggle text-success display-4"
+                                    href="blockchain-consensus-algorithm.html" aria-expanded="false"
+                                    data-toggle="dropdown-submenu">Blockchain Technologien</a>
+                                <div class="dropdown-menu dropdown-submenu"><a
+                                        class="dropdown-item text-success display-4"
+                                        href="blockain-technology-overview.html" aria-expanded="false">Blockchain
+                                        Technologien</a><a class="dropdown-item text-success display-4"
+                                        href="atomic-swaps-btc-exchange.html" aria-expanded="false">Atomic &amp; LN
+                                        swaps<br></a><a class="dropdown-item text-success display-4"
+                                        href="decentrlized-applications-dapps.html" aria-expanded="false">dApps &amp;
+                                        DAO</a><a class="dropdown-item text-success text-primary display-4"
+                                        href="btc-lightning-network.html" aria-expanded="false">Lightning Network</a><a
+                                        class="dropdown-item text-success display-4"
+                                        href="liquid-network-bitcoin-sidechain.html" aria-expanded="false">Liquid
+                                        Network</a><a class="dropdown-item text-success display-4"
+                                        href="smart-contract-blockchain.html" aria-expanded="false">Smart
+                                        Contracts<br></a><a class="dropdown-item text-success display-4"
+                                        href="segwit-segregated-witness.html" aria-expanded="false">Segregated
+                                        Witness</a><a class="dropdown-item text-success display-4"
+                                        href="blockchain-sidechains.html" aria-expanded="false">Sidechains</a><a
+                                        class="dropdown-item text-success display-4"
+                                        href="web-3-next-generation-internet.html" aria-expanded="false">Web 3.0</a>
+                                </div>
+                            </div>
+                            <div class="dropdown"><a class="dropdown-item dropdown-toggle text-success display-4"
+                                    href="bitcoin-privacy.html#content5-6z" aria-expanded="false"
+                                    data-toggle="dropdown-submenu">Privatsphäre</a>
+                                <div class="dropdown-menu dropdown-submenu">
+                                    <a class="dropdown-item text-success display-4" href="comming-soon.html"
+                                        aria-expanded="false">Transaktionsmixer</a>
+
+                                    <a class="dropdown-item text-success display-4"
+                                        href="schnorr-signatures-blockchain-privacy-protocol.html"
+                                        aria-expanded="false">Schnorr Signaturen</a>
+                                </div>
+                            </div>
+                            <div class="dropdown"><a class="dropdown-item dropdown-toggle text-success display-4"
+                                    href="#" aria-expanded="false" data-toggle="dropdown-submenu">Nodes</a>
+                                <div class="dropdown-menu dropdown-submenu"><a
+                                        class="dropdown-item text-success display-4"
+                                        href="https://bitcoin.org/en/download" aria-expanded="false"
+                                        target="_blank">Bitcoin Core</a><a class="dropdown-item text-success display-4"
+                                        href="https://btcpayserver.org/" aria-expanded="false"
+                                        target="_blank">BTCPayServer LN</a><a
+                                        class="dropdown-item text-success display-4"
+                                        href="https://github.com/rootzoll/raspiblitz" aria-expanded="false"
+                                        target="_blank">Raspiblitz&nbsp;LN </a><a
+                                        class="dropdown-item text-success display-4" href="https://fulmo.org/"
+                                        aria-expanded="false" target="_blank">Fulmo&nbsp;LN </a><a
+                                        class="dropdown-item text-success display-4"
+                                        href="https://samouraiwallet.com/dojo" aria-expanded="false"
+                                        target="_blank">Dojo</a></div>
+                            </div>
+                        </div>
+                    </li>
+
+
+                    <li class="nav-item dropdown"><a class="nav-link link dropdown-toggle text-success display-4"
+                            href="#" aria-expanded="false" data-toggle="dropdown-submenu">Services<font
+                                face="mobirise-icons-bold">
+                            </font></a>
+                        <div class="dropdown-menu"><a class="dropdown-item text-success display-4" href="beratung.html"
+                                aria-expanded="false">Beratungen</a><a class="dropdown-item text-success display-4"
+                                href="https://btcpayserver.bitcoin-uni.de/" aria-expanded="false"
+                                target="_blank">BTCPayServer</a><a class="dropdown-item text-success display-4"
+                                href="https://btc-explorer.bitcoin-uni.de/" aria-expanded="false"
+                                target="_blank">Blockchain Explorer</a><a class="dropdown-item text-success display-4"
+                                href="https://vanity-address.bitcoin-uni.de/" aria-expanded="false"
+                                target="_blank">Vanity Adressen
+                                Generator</a></div>
+                    </li>
+                    <li class="nav-item dropdown"><a class="nav-link link dropdown-toggle text-success display-4"
+                            href="#" aria-expanded="false" data-toggle="dropdown-submenu">Tools<font
+                                face="mobirise-icons-bold">
+                            </font></a>
+                        <div class="dropdown-menu">
+                            <div class="dropdown"><a class="dropdown-item dropdown-toggle text-success display-4"
+                                    href="#" aria-expanded="false" data-toggle="dropdown-submenu">Splitkey merging
+                                    tool</a>
+                                <div class="dropdown-menu dropdown-submenu"><a
+                                        class="dropdown-item text-success display-4"
+                                        href="https://github.com/sashmaaan/VanityAddressMerger" aria-expanded="false"
+                                        target="_blank">Github Vollversion</a><a
+                                        class="dropdown-item text-success display-4"
+                                        href="https://bitcoin-uni.de/vanityAddressMerger/" aria-expanded="false"
+                                        target="_blank">Chrome PWA App</a><a
+                                        class="dropdown-item text-success display-4"
+                                        href="https://siasky.net/_ADKOyY3bx9RyMcQCahX7Jbw87Gn5sBG8eRrmX7wkMbkPA/"
+                                        aria-expanded="false" target="_blank">Web3.0 App</a><a
+                                        class="dropdown-item text-success display-4"
+                                        href="https://vanity-address.bitcoin-uni.de/keymerging" aria-expanded="false"
+                                        target="_blank">WebApp</a></div>
+                            </div><a class="dropdown-item text-success display-4"
+                                href="/transaction-size-calculator/tx-size-calculator.html"
+                                aria-expanded="false">Transaction Size Calculator</a><a
+                                class="dropdown-item text-success display-4" href="#" aria-expanded="false">Transaction
+                                Fee Calculator</a><a class="dropdown-item text-success display-4"
+                                href="/xpub-converter/extended-public-key-converter.html" aria-expanded="false">Public
+                                Key Converter</a><a class="dropdown-item text-success display-4" href="#"
+                                aria-expanded="false">CO2 Emissions Rechner</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown"><a class="nav-link link dropdown-toggle text-success display-4"
+                            href="#" aria-expanded="false" data-toggle="dropdown-submenu">Glossar<font
+                                face="mobirise-icons-bold"></font></a>
+                        <div class="dropdown-menu"><a class="dropdown-item text-success display-4"
+                                href="bitcoin-blockchain-glossar.html" aria-expanded="false">Bitcoin technisches
+                                Glossar</a><a class="dropdown-item text-success display-4" href="wallet-glossar.html"
+                                aria-expanded="false">Wallet Glossar</a><a class="dropdown-item text-success display-4"
+                                href="comming-soon.html" aria-expanded="false">Blockchain &amp; DLT Glossar</a><a
+                                class="dropdown-item text-success display-4" href="comming-soon.html"
+                                aria-expanded="false">DeFi Glossar</a></div>
+                    </li>
+                    <li class="nav-item"><a class="nav-link link text-success display-4"
+                            href="bitcoin-links-ressourcen.html" aria-expanded="false">Links<font
+                                face="mobirise-icons-bold">
+                            </font></a></li>
+
+                    <li class="nav-item"><a class="nav-link link text-success display-4" href="about.html"
+                            aria-expanded="false">About<font face="mobirise-icons-bold"></font></a></li>
+                    <li class="nav-item"><a class="nav-link link text-success display-4" href="about.html"
+                            aria-expanded="false">
+                            <font face="mobirise-icons-bold"></font>
+                        </a></li>
+
+                    <li class="nav-item"><a class="nav-link link text-success display-4" href="about.html"
+                            aria-expanded="false">
+                            <font face="mobirise-icons-bold"></font>
+                        </a></li>
+                    <li class="nav-item"><a class="nav-link link text-success display-4" href="about.html"
+                            aria-expanded="false">
+                            <font face="mobirise-icons-bold"></font>
+                        </a></li>
+                    <li class="nav-item"><a class="nav-link link text-success display-4" href="about.html"
+                            aria-expanded="false">
+                            <font face="mobirise-icons-bold"></font>
+                        </a></li>
+                    <li class="nav-item"><a class="nav-link link text-success display-4" href="about.html"
+                            aria-expanded="false">
+                            <font face="mobirise-icons-bold"></font>
+                        </a></li>
+                </ul>
+                <div class="navbar-buttons mbr-section-btn"><a class="btn btn-sm btn-success-outline display-4"
+                        href="https://vanity-address.bitcoin-uni.de/" target="_blank"><span
+                            class="fa fa-bitcoin mbr-iconfont mbr-iconfont-btn"></span>
+                        Vanity Addresse</a></div>
+            </div>
+        </nav>
+    </section>
+
+    <section class="mbr-section mx-2 " id="">
+
+
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+
+
+        <div class="container">
+            <h1 class="text-center">Bitcoin Transaction Size Calculator</h1>
+            <hr />
+            <div class="row">
+                <div class="col-md-12">
+                    <form role="form" action="javascript:void(0);">
+                        <div>
+                            <div class="col-sm-2">
+                            </div>
+                            <div class="col-sm-10">
+                                <p>This calculator will give you the upper bound of the size of a transaction with
+                                    specific characteristics. The size could be a few bytes smaller due to signature
+                                    randomness, but it's unpredictable and you should err on the side of caution to
+                                    avoid creating transactions that don't get relayed due to paying fees below the
+                                    standard minimum rate.</p>
+                                <p>If you want to understand how the calculation gets broken down, check out the
+                                    explanation on the <a href="https://bitcoinops.org/en/tools/calc-size">Bitcoin
+                                        Optech Calculator</a></p>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="col-sm-2"></label>
+                            <div class="col-sm-10">
+                                <div class="form-group row">
+                                    <h4>What are the attributes of the bitcoin transaction?</h4>
+                                    <label for="input_count" class="col-sm-4 col-form-label">Number of inputs</label>
+                                    <div class="col-sm-2">
+                                        <input type="text" id="input_count" class="format form-control" value="1"
+                                            maxlength="5" size="5" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="input_script" class="col-sm-4 col-form-label">Input script type</label>
+                                    <div class="col-sm-3">
+                                        <select id="input_script" class="format form-control">
+                                            <option value="P2PKH" selected>P2PKH</option>
+                                            <option value="P2SH">P2SH</option>
+                                            <option value="P2SH-P2WPKH">P2WPKH in P2SH</option>
+                                            <option value="P2SH-P2WSH">P2WSH in P2SH</option>
+                                            <option value="P2WPKH">P2WPKH</option>
+                                            <option value="P2WSH">P2WSH</option>
+                                            <option value="P2TR">P2TR</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="input_m" class="col-sm-4 col-form-label">Signatures per input</label>
+                                    <div class="col-sm-2">
+                                        <input type="text" id="input_m" class="format form-control" value="1"
+                                            maxlength="5" size="5" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="input_n" class="col-sm-4 col-form-label">Pubkeys per input</label>
+                                    <div class="col-sm-2">
+                                        <input type="text" id="input_n" class="format form-control" value="1"
+                                            maxlength="5" size="5" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="p2pkh_output_count" class="col-sm-4 col-form-label">P2PKH
+                                        outputs</label>
+                                    <div class="col-sm-2">
+                                        <input type="text" id="p2pkh_output_count" class="format form-control" value="0"
+                                            maxlength="5" size="5" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="p2sh_output_count" class="col-sm-4 col-form-label">P2SH outputs</label>
+                                    <div class="col-sm-2">
+                                        <input type="text" id="p2sh_output_count" class="format form-control" value="0"
+                                            maxlength="5" size="5" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="p2sh_p2wpkh_output_count" class="col-sm-4 col-form-label">P2WPKH in P2SH
+                                        outputs</label>
+                                    <div class="col-sm-2">
+                                        <input type="text" id="p2sh_p2wpkh_output_count" class="format form-control"
+                                            value="0" maxlength="5" size="5" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="p2sh_p2wsh_output_count" class="col-sm-4 col-form-label">P2WSH in P2SH
+                                        outputs</label>
+                                    <div class="col-sm-2">
+                                        <input type="text" id="p2sh_p2wsh_output_count" class="format form-control"
+                                            value="0" maxlength="5" size="5" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="p2wpkh_output_count" class="col-sm-4 col-form-label">P2WPKH
+                                        outputs</label>
+                                    <div class="col-sm-2">
+                                        <input type="text" id="p2wpkh_output_count" class="format form-control"
+                                            value="0" maxlength="5" size="5" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="p2wsh_output_count" class="col-sm-4 col-form-label">P2WSH
+                                        outputs</label>
+                                    <div class="col-sm-2">
+                                        <input type="text" id="p2wsh_output_count" class="format form-control" value="0"
+                                            maxlength="5" size="5" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="p2tr_output_count" class="col-sm-4 col-form-label">P2TR outputs</label>
+                                    <div class="col-sm-2">
+                                        <input type="text" id="p2tr_output_count" class="format form-control" value="0"
+                                            maxlength="5" size="5" />
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary"
+                                    onclick="processForm();return false;">Calculate</button><br /><br /><br />
+                                Transaction size in raw bytes: <span id="txBytes"></span><br />
+                                Transaction size in virtual bytes: <span id="txVBytes"></span><br />
+                                Transaction size in weight units: <span id="txWeight"></span><br /><br />
+                                <p>Which size should you use for calculating fee estimates?<br />
+                                    Estimates should be in <a
+                                        href="https://medium.com/@murchandamus/psa-wrong-fee-rates-on-block-explorers-48390cbfcc74">satoshis
+                                        per virtual byte.</a></p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <hr />
+                <div class="col-md-12">
+                    <div>
+                        <hr />
+                        <div class="col-sm-2">
+                        </div>
+                        <div class="col-sm-10">
+                            <h2>This tool is 100% open source code</h2>
+                            <p>
+                                <span>The Bitcoin Transaction Size Calculator repository can be found at </span>
+                                <a href="https://github.com/jlopp/bitcoin-transaction-size-calculator" target="_blank">
+                                    https://github.com/jlopp/bitcoin-transaction-size-calculator
+                                </a>
+                            </p>
+                            <h3>Libraries</h3>
+                            <p>
+                                <span>Twitter Bootstrap: </span>
+                                <a href="http://getbootstrap.com/" target="_blank">
+                                    http://getbootstrap.com/
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
+
+    <section class="cid-sx2DcurKFx" id="footer1-ox">
+
+
+
+
+
+        <div class="container">
+            <div class="media-container-row content text-white">
+                <div class="col-12 col-md-3">
+                    <div class="media-wrap">
+                        <a href="#">
+                            <img src="assets/images/kompl.-b-day-mode-14x-8-192x151.png" alt="Bitcoin Uni" title="">
+                        </a>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3 mbr-fonts-style display-7">
+                    <h5 class="pb-3">
+                        <p>Unterstütze das Projekt für weitere Entwicklungen und Beiträge!</p>
+                    </h5>
+                    <p class="mbr-text"><a
+                            href="https://live.blockcypher.com/btc/address/3BitunigscbkbD6pRpRN32S79UZqJhTxge/"
+                            target="_blank" class="text-success">3BitunigscbkbD6pRpRN32S79UZqJhTxge</a></p>
+                </div>
+                <div class="col-12 col-md-3 mbr-fonts-style display-7">
+                    <h5 class="pb-3">
+                        <a href="beratung.html" class="text-success text-primary">Kontakt</a><br><br><a
+                            href="kontakt.html" class="text-success">015221311745</a>
+                    </h5>
+                    <p class="mbr-text"><a href="mailto:info@bitcoin-uni.de"
+                            class="text-success">info@bitcoin-uni.de</a><br><a href="impressum-dsgvo.html"
+                            class="text-success">Impressum</a><br><a href="impressum-dsgvo.html"
+                            class="text-success">Datenschutzvorordnung</a><a href="impressum-dsgvo.html"><br></a></p>
+                </div>
+                <div class="col-12 col-md-3 mbr-fonts-style display-7">
+                    <h5 class="pb-3">
+                        <a href="https://bitcoin-uni.de/bitcoin-links-ressourcen.html" class="text-success">Links</a>
+                    </h5>
+                    <p class="mbr-text"><a href="https://vanity-address.bitcoin-uni.de/sites/faq-vanity-address.html"
+                            class="text-success">FAQ - Vanity Adressen</a><br><a href="https://vanity-bitcoin.de"
+                            class="text-success">Bitcoin Vanity Wallet</a><br><a
+                            href="https://vanity-address.bitcoin-uni.de/" class="text-success">Vanity Adressen
+                            Generator&nbsp;</a><br><a href="https://bitcoin-uni.de" class="text-success">Bitcoin-Uni -
+                            Website</a><br></p>
+                </div>
+            </div>
+            <div class="footer-lower">
+                <div class="media-container-row">
+                    <div class="col-sm-12">
+                        <hr>
+                    </div>
+                </div>
+                <div class="media-container-row mbr-white">
+                    <div class="col-sm-6 copyright">
+                        <p class="mbr-text mbr-fonts-style display-7">Free knowledge for free people!</p>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="social-list align-right">
+                            <div class="soc-item">
+                                <a href="https://twitter.com/cryptxraver" target="_blank">
+                                    <span class="mbr-iconfont mbr-iconfont-social socicon-twitter socicon"
+                                        style="color: rgb(241, 214, 0); fill: rgb(241, 214, 0);"></span>
+                                </a>
+                            </div>
+                            <div class="soc-item">
+                                <a href="https://www.facebook.com/bitcoinunide" target="_blank">
+                                    <span class="mbr-iconfont mbr-iconfont-social socicon-facebook socicon"
+                                        style="color: rgb(241, 214, 0); fill: rgb(241, 214, 0);"></span>
+                                </a>
+                            </div>
+                            <div class="soc-item">
+                                <a href="https://t.me/bitcoin_uni_support" target="_blank">
+                                    <span class="mbr-iconfont mbr-iconfont-social socicon-telegram socicon"
+                                        style="color: rgb(241, 214, 0); fill: rgb(241, 214, 0);"></span>
+                                </a>
+                            </div>
+                            <div class="soc-item">
+                                <a href="https://instagram.com/bitcoin_uni_education" target="_blank">
+                                    <span class="mbr-iconfont mbr-iconfont-social socicon-instagram socicon"
+                                        style="color: rgb(239, 226, 31); fill: rgb(239, 226, 31);"></span>
+                                </a>
+                            </div>
+                            <div class="soc-item">
+                                <a href="https://bitcointalk.org/index.php?topic=5281176.0" target="_blank">
+                                    <span class="mbr-iconfont mbr-iconfont-social icon54-v1-bitcoin-3"
+                                        style="color: rgb(241, 226, 8); fill: rgb(241, 226, 8);"></span>
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <script src="/assets/web/assets/jquery/jquery.min.js"></script>
+    <script src="/assets/popper/popper.min.js"></script>
+    <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/assets/tether/tether.min.js"></script>
+    <script src="/assets/smoothscroll/smooth-scroll.js"></script>
+    <script src="/assets/dropdown/js/nav-dropdown.js"></script>
+    <script src="/assets/dropdown/js/navbar-dropdown.js"></script>
+    <script src="/assets/touchswipe/jquery.touch-swipe.min.js"></script>
+    <script src="/assets/viewportchecker/jquery.viewportchecker.js"></script>
+    <script src="/assets/theme/js/script.js"></script>
+
+
+
+    <div id="scrollToTop" class="scrollToTop mbr-arrow-up"><a style="text-align: center;"><i
+                class="mbr-arrow-up-icon mbr-arrow-up-icon-cm cm-icon cm-icon-smallarrow-up"></i></a></div>
+    <input name="animation" type="hidden">
+
+</body>
+
+</html>
